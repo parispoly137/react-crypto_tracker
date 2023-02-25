@@ -9,6 +9,7 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
+    {/* theme.ts로부터 기본 theme에 대한 객체를 받아와 적용 */}
     <ThemeProvider theme={theme}>
       <Router />
     </ThemeProvider>

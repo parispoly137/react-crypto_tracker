@@ -1,12 +1,14 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Coins from "./components/Coins";
-import Coin from "./components/Coin";
+import Coins from "./routes/Coins";
+import Coin from "./routes/Coin";
 import App from "./App";
+import NotFound from "./NotFound";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
+    // root 파일에 연결된 children 컴포넌트 정의
     children: [
       {
         path: "/",
@@ -17,6 +19,8 @@ const router = createBrowserRouter([
         element: <Coin />,
       },
     ],
+    // 위 컴포넌트들에 해당하는 url이 아닌 경우 보여주는 페이지
+    errorElement: <NotFound />,
   },
 ]);
 
