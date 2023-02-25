@@ -1,6 +1,8 @@
 import { Outlet } from "react-router-dom";
 import { createGlobalStyle } from "styled-components";
+import { Helmet, HelmetProvider } from "react-helmet-async";
 
+// 전역으로 CSS 스타일을 적용시키는 컴포넌트
 const GlobalStyle = createGlobalStyle`
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
@@ -63,15 +65,26 @@ button{
 
 body{
   background-color: ${(props) => props.theme.bgColor};
+  font-family: 'Comfortaa', cursive;
 }
 
 `;
 
 export default function App() {
   return (
-    <>
+    <HelmetProvider>
+      {/* index.html의 head 부분에 직접 접근하지 않고 Helmet을 통해 추가 */}
+      <Helmet>
+        <link rel='preconnect' href='https://fonts.googleapis.com' />
+        <link rel='preconnect' href='https://fonts.gstatic.com' />
+        <link
+          href='https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;500;600&display=swap'
+          rel='stylesheet'
+        />
+      </Helmet>
       <GlobalStyle />
+      {/* 기본 Root인 App.tsx의 children을 렌더링해주는 Outlet 컴포넌트 */}
       <Outlet />
-    </>
+    </HelmetProvider>
   );
 }
