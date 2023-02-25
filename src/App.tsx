@@ -1,5 +1,11 @@
+import { Outlet } from "react-router-dom";
+
 function App() {
-  return <h1>React - Crypto Tracker</h1>;
+  return (
+    <>
+      <Outlet />
+    </>
+  );
 }
 
 export default App;
