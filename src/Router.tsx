@@ -4,6 +4,7 @@ import Coin from "./routes/Coin";
 import App from "./App";
 import NotFound from "./NotFound";
 
+// Router 세팅
 const router = createBrowserRouter([
   {
     path: "/",
@@ -24,6 +25,7 @@ const router = createBrowserRouter([
   },
 ]);
 
+// -> index.tsx
 export default function Router() {
   return <RouterProvider router={router} />;
 }

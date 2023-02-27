@@ -4,6 +4,8 @@ import { Helmet, HelmetProvider } from "react-helmet-async";
 
 // 전역으로 CSS 스타일을 적용시키는 컴포넌트
 const GlobalStyle = createGlobalStyle`
+
+// Reset-CSS
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
@@ -54,6 +56,8 @@ table {
 * {
   box-sizing: border-box;
 }
+
+// custom
 a{
   text-decoration:none;
   color:inherit;
@@ -82,8 +86,10 @@ export default function App() {
           rel='stylesheet'
         />
       </Helmet>
+      {/* 위에서 정의한 css 코드들을 전역으로 적용 */}
       <GlobalStyle />
       {/* 기본 Root인 App.tsx의 children을 렌더링해주는 Outlet 컴포넌트 */}
+      {/* -> Coins.tsx || Coin.tsx || NotFound.tsx */}
       <Outlet />
     </HelmetProvider>
   );

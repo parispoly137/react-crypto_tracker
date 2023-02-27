@@ -1,6 +1,7 @@
 import "styled-components";
 
-// theme에 정의한 특성에 대한 타입들을 선언
+// DefaultTheme 객체에 사용자 지정 색상 특성 및 타입 종류 선언
+// -> theme.ts
 declare module "styled-components" {
   export interface DefaultTheme {
     bgColor: string;
