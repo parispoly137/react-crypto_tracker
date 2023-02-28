@@ -1,4 +1,10 @@
-import { useLocation, useParams } from "react-router-dom";
+import {
+  useLocation,
+  useParams,
+  Outlet,
+  Link,
+  useMatch,
+} from "react-router-dom";
 import styled from "styled-components";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -6,13 +12,15 @@ import axios from "axios";
 // styled components
 const Container = styled.div`
   display: flex;
-  justify-content: center;
-  align-items: center;
   flex-direction: column;
+  width: 480px;
+  margin: 0 auto;
+  color: ${(props) => props.theme.listColor};
 `;
 
 const Header = styled.header`
   margin: 40px 0;
+  text-align: center;
 `;
 
 const Title = styled.h1`
@@ -23,14 +31,78 @@ const Title = styled.h1`
 const Loader = styled.span`
   display: block;
   text-align: center;
-  color: ${(props) => props.theme.listColor};
   font-size: 20px;
+`;
+
+const InfoView = styled.div``;
+
+const InfoBox = styled.div`
+  height: 60px;
+  background-color: #00000080;
+  display: flex;
+  justify-content: space-evenly;
+  border-radius: 10px;
+
+  // 자식 요소를 동일한 너비와 높이를 갖도록 한다.
+  & > * {
+    flex: 1;
+  }
+`;
+
+const Description = styled.div`
+  margin: 25px 0;
+  line-height: 1.2;
+`;
+
+const InfoItem = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  span {
+    text-align: center;
+    display: block;
+    font-size: 16px;
+
+    &:first-of-type {
+      font-size: 10px;
+      margin-bottom: 12px;
+    }
+  }
+`;
+
+// styled(<component>) 로 특성을 그대로 가져온다.
+const TabView = styled(InfoView)`
+  // gap 특성을 활용하기 위해 그리드 사용
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  margin: 25px 0px;
+  gap: 10px;
+  width: 100%;
+`;
+
+// props로 값을 보낸 뒤, 타입 직접 지정
+const Tab = styled(InfoBox)<{ isActive: boolean }>`
+  height: 100%;
+
+  a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    text-transform: uppercase;
+    padding: 10px 0;
+    // props 로 조건문을 만들어 선택적으로 색상 적용
+    color: ${(props) =>
+      props.isActive ? props.theme.accentColor : props.theme.listColor};
+  }
 `;
 
 // Declaration of variables
 
 // useLocation 으로 받은 state 타입 선언
-interface IRouterState {
+interface IRouteState {
   state: {
     name: string;
   };
@@ -104,20 +176,23 @@ export default function Coin() {
 
   // Link를 통해 보낸 state 객체를 받음. 새롭게 url에서 추출하지 않아도 된다.
   // (coinId를 이용해 API 호출하여 name을 받아올 수도 있다. <useLocation 실습용>)
-  const {
-    state: { name }, // 객체 분해 할당
-  } = useLocation() as IRouterState; // Generic을 지원하지 않아 as로 직접 지정
+  const { state } = useLocation() as IRouteState; // Generic을 지원하지 않아 as로 직접 지정
+
+  // useMatch를 이용하여 현재 url에 대한 object 정보를 얻는다.
+  const chartMatch = useMatch("/:coinId/chart");
+  const priceMatch = useMatch("/:coinId/price");
 
   // coinId를 이용해 개별 코인 정보에 대한 API를 호출 ... axios
-
   useEffect(() => {
     try {
+      // coin 정보 API
       axios
         .get(`https://api.coinpaprika.com/v1/coins/${coinId}`)
         .then((coin) => {
           setCoinInfo(coin.data);
         });
 
+      // coin 실시간 거래가 API
       axios
         .get(`https://api.coinpaprika.com/v1/tickers/${coinId}`)
         .then((ticker) => {
@@ -133,17 +208,53 @@ export default function Coin() {
   return (
     <Container>
       <Header>
-        <Title>{name}</Title>
+        <Title>
+          {/* 직접 접근했다면 state.name이 아닌 api에서 받은 정보로 출력 */}
+          {state?.name ? state.name : isLoading ? "Loading..." : coinInfo?.name}
+        </Title>
       </Header>
       {isLoading ? (
         <Loader>Loading...</Loader>
       ) : (
-        <div>
-          <h1>coinInfo</h1>
-          <h3>{coinInfo?.id}</h3>
-          <h1>coinTicker</h1>
-          <h3>{coinPrice?.id}</h3>
-        </div>
+        <>
+          <InfoView>
+            <InfoBox>
+              <InfoItem>
+                <span>Rank</span>
+                <span>{coinInfo?.rank}</span>
+              </InfoItem>
+              <InfoItem>
+                <span>Symbol</span>
+                <span>{coinInfo?.symbol}</span>
+              </InfoItem>
+              <InfoItem>
+                <span>Price</span>
+                <span>{coinPrice?.quotes.USD.price.toFixed(3)}</span>
+              </InfoItem>
+            </InfoBox>
+            <Description>{coinInfo?.description}</Description>
+            <InfoBox>
+              <InfoItem>
+                <span>TOTAL SUPPLY</span>
+                <span>{coinPrice?.total_supply}</span>
+              </InfoItem>
+              <InfoItem>
+                <span>MAX SUPPLY</span>
+                <span>{coinPrice?.max_supply}</span>
+              </InfoItem>
+            </InfoBox>
+          </InfoView>
+          <TabView>
+            {/* props를 직접 정의하여 전달 */}
+            <Tab isActive={chartMatch !== null}>
+              <Link to={`/${coinId}/chart`}>Chart</Link>
+            </Tab>
+            <Tab isActive={priceMatch !== null}>
+              <Link to={`/${coinId}/price`}>Price</Link>
+            </Tab>
+          </TabView>
+          <Outlet />
+        </>
       )}
     </Container>
   );

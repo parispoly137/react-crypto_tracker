@@ -74,7 +74,7 @@ body{
 
 `;
 
-export default function App() {
+export default function Root() {
   return (
     <HelmetProvider>
       {/* index.html의 head 부분에 직접 접근하지 않고 Helmet을 통해 추가 */}
