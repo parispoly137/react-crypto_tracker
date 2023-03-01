@@ -8,8 +8,8 @@ import {
 import styled from "styled-components";
 import { useQuery } from "@tanstack/react-query";
 import { fetchCoinInfo, fetchCoinPrice } from "../api";
-// import { useEffect, useState } from "react";
-// import axios from "axios";
+import { BsHouseDoor } from "react-icons/bs";
+import { Helmet } from "react-helmet-async";
 
 // styled components
 const Container = styled.div`
@@ -23,6 +23,16 @@ const Container = styled.div`
 const Header = styled.header`
   margin: 40px 0;
   text-align: center;
+  position: relative;
+
+  a {
+    position: absolute;
+    font-size: 24px;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    color: ${(props) => props.theme.listColor};
+  }
 `;
 
 const Title = styled.h1`
@@ -171,15 +181,11 @@ interface ICoinPrice {
 
 // Main
 export default function Coin() {
-  const { coinId } = useParams();
-  // 기존의 useState 코드 제거 ... useQuery로 대체
-  /*  const [isLoading, setIsLoading] = useState(true);
-  const [coinInfo, setCoinInfo] = useState<ICoinInfo>(); // 타입을 알기 때문에 빈 객체 생략 가능
-  const [coinPrice, setCoinPrice] = useState<ICoinPrice>(); */
-
   // Link를 통해 보낸 state 객체를 받음. 새롭게 url에서 추출하지 않아도 된다.
   // (coinId를 이용해 API 호출하여 name을 받아올 수도 있다. <useLocation 실습용>)
   const { state } = useLocation() as IRouteState; // Generic을 지원하지 않아 as로 직접 지정
+
+  const { coinId } = useParams();
 
   // useMatch를 이용하여 현재 url에 대한 object 정보를 얻는다.
   const chartMatch = useMatch("/:coinId/chart");
@@ -194,39 +200,32 @@ export default function Coin() {
   const { isLoading: priceLoading, data: priceData } = useQuery<ICoinPrice>({
     queryKey: ["coinPrice", coinId],
     queryFn: () => fetchCoinPrice(coinId!), // Non-null assertion operator
-    refetchInterval: 5000, // 지정한 시간 간격마다 fetching을 다시 실행한다.
+    // refetchInterval: 5000, // 지정한 시간 간격마다 fetching을 다시 실행한다.
   });
 
   const isLoading = infoLoading || priceLoading; // 로딩 상태를 하나로 통일
 
-  // 기존의 useEffect + axios 코드 제거 ... useQuery로 대체
-  /* 
-  // coinId를 이용해 개별 코인 정보에 대한 API를 호출 ... axios
-  useEffect(() => {
-    try {
-      // coin 정보 API
-      axios
-        .get(`https://api.coinpaprika.com/v1/coins/${coinId}`)
-        .then((coin) => {
-          setCoinInfo(coin.data);
-        });
-
-      // coin 실시간 거래가 API
-      axios
-        .get(`https://api.coinpaprika.com/v1/tickers/${coinId}`)
-        .then((ticker) => {
-          setCoinPrice(ticker.data);
-        });
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [coinId]); */
-
   return (
     <Container>
+      {/* Coin별 title 및 favicon 설정 */}
+      <Helmet>
+        <title>
+          {state?.name ? state.name : isLoading ? "Loading..." : infoData?.name}
+        </title>
+        <link
+          rel='icon'
+          href={
+            `https://cryptocurrencyliveprices.com/img/${coinId}.png` ||
+            "/imgs/coin.png"
+          }
+        />
+      </Helmet>
       <Header>
+        {/* Home으로 돌아가는 버튼 생성 */}
+        <Link to='/'>
+          {/* react-icons */}
+          <BsHouseDoor />
+        </Link>
         <Title>
           {/* 직접 접근했다면 state.name이 아닌 api에서 받은 정보로 출력 */}
           {state?.name ? state.name : isLoading ? "Loading..." : infoData?.name}

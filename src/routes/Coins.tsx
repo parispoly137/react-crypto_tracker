@@ -84,24 +84,6 @@ export default function Coins() {
     queryFn: coinsFetcher,
   });
 
-  // 기존의 useState, useEffect 를 사용한 data fetching 방식 삭제
-  /*  const [coins, setCoins] = useState<ICoinInfo[]>([]); // 코인 정보를 담는 state. 타입 지정. + 배열 분해 할당
-  const [isLoading, setIsLoading] = useState(true); // 로딩여부를 담는 state
-
-
-  useEffect(() => {
-    // axios 모듈을 이용하여 Coins API를 Fetching 및 state 설정
-    try {
-      axios.get("https://api.coinpaprika.com/v1/coins").then((response) => {
-        setCoins(response.data.slice(0, 100));
-      });
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []); */
-
   return (
     <Container>
       <Header>
