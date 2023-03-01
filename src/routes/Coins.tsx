@@ -1,7 +1,9 @@
 import styled from "styled-components";
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
+// import { useEffect, useState } from "react";
+// import axios from "axios";
+import { coinsFetcher } from "../api";
 
 // styled components
 const Container = styled.div`
@@ -76,8 +78,16 @@ interface ICoinInfo {
 
 // Main
 export default function Coins() {
-  const [coins, setCoins] = useState<ICoinInfo[]>([]); // 코인 정보를 담는 state. 타입 지정. + 배열 분해 할당
+  // useQuery 로 변경
+  const { isLoading, data } = useQuery<ICoinInfo[]>({
+    queryKey: ["allCoins"],
+    queryFn: coinsFetcher,
+  });
+
+  // 기존의 useState, useEffect 를 사용한 data fetching 방식 삭제
+  /*  const [coins, setCoins] = useState<ICoinInfo[]>([]); // 코인 정보를 담는 state. 타입 지정. + 배열 분해 할당
   const [isLoading, setIsLoading] = useState(true); // 로딩여부를 담는 state
+
 
   useEffect(() => {
     // axios 모듈을 이용하여 Coins API를 Fetching 및 state 설정
@@ -90,7 +100,7 @@ export default function Coins() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, []); */
 
   return (
     <Container>
@@ -103,7 +113,7 @@ export default function Coins() {
       ) : (
         <CoinsList>
           {/* Coins API를 받아와서 mapping ... coin 리스트 생성 */}
-          {coins.map((coin) => (
+          {data?.slice(0, 100).map((coin) => (
             // -> Coin.tsx
             <Coin key={coin.id}>
               {/* 코인 이미지 API를 직접 연결 */}

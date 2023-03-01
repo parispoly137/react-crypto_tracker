@@ -6,8 +6,10 @@ import {
   useMatch,
 } from "react-router-dom";
 import styled from "styled-components";
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
+import { fetchCoinInfo, fetchCoinPrice } from "../api";
+// import { useEffect, useState } from "react";
+// import axios from "axios";
 
 // styled components
 const Container = styled.div`
@@ -169,10 +171,11 @@ interface ICoinPrice {
 
 // Main
 export default function Coin() {
-  const [isLoading, setIsLoading] = useState(true);
   const { coinId } = useParams();
+  // 기존의 useState 코드 제거 ... useQuery로 대체
+  /*  const [isLoading, setIsLoading] = useState(true);
   const [coinInfo, setCoinInfo] = useState<ICoinInfo>(); // 타입을 알기 때문에 빈 객체 생략 가능
-  const [coinPrice, setCoinPrice] = useState<ICoinPrice>();
+  const [coinPrice, setCoinPrice] = useState<ICoinPrice>(); */
 
   // Link를 통해 보낸 state 객체를 받음. 새롭게 url에서 추출하지 않아도 된다.
   // (coinId를 이용해 API 호출하여 name을 받아올 수도 있다. <useLocation 실습용>)
@@ -182,6 +185,22 @@ export default function Coin() {
   const chartMatch = useMatch("/:coinId/chart");
   const priceMatch = useMatch("/:coinId/price");
 
+  // react query 의 useQuery를 이용하여 데이터, 로딩상태 등을 가져온다.
+  const { isLoading: infoLoading, data: infoData } = useQuery<ICoinInfo>({
+    queryKey: ["coinInfo", coinId], // query key는 array 형식
+    queryFn: () => fetchCoinInfo(coinId!), // promise를 반환하는 fetcher 함수 지정.
+  });
+
+  const { isLoading: priceLoading, data: priceData } = useQuery<ICoinPrice>({
+    queryKey: ["coinPrice", coinId],
+    queryFn: () => fetchCoinPrice(coinId!), // Non-null assertion operator
+    refetchInterval: 5000, // 지정한 시간 간격마다 fetching을 다시 실행한다.
+  });
+
+  const isLoading = infoLoading || priceLoading; // 로딩 상태를 하나로 통일
+
+  // 기존의 useEffect + axios 코드 제거 ... useQuery로 대체
+  /* 
   // coinId를 이용해 개별 코인 정보에 대한 API를 호출 ... axios
   useEffect(() => {
     try {
@@ -203,14 +222,14 @@ export default function Coin() {
     } finally {
       setIsLoading(false);
     }
-  }, [coinId]);
+  }, [coinId]); */
 
   return (
     <Container>
       <Header>
         <Title>
           {/* 직접 접근했다면 state.name이 아닌 api에서 받은 정보로 출력 */}
-          {state?.name ? state.name : isLoading ? "Loading..." : coinInfo?.name}
+          {state?.name ? state.name : isLoading ? "Loading..." : infoData?.name}
         </Title>
       </Header>
       {isLoading ? (
@@ -221,26 +240,26 @@ export default function Coin() {
             <InfoBox>
               <InfoItem>
                 <span>Rank</span>
-                <span>{coinInfo?.rank}</span>
+                <span>{infoData?.rank}</span>
               </InfoItem>
               <InfoItem>
                 <span>Symbol</span>
-                <span>{coinInfo?.symbol}</span>
+                <span>{infoData?.symbol}</span>
               </InfoItem>
               <InfoItem>
                 <span>Price</span>
-                <span>{coinPrice?.quotes.USD.price.toFixed(3)}</span>
+                <span>{priceData?.quotes.USD.price.toFixed(3)}</span>
               </InfoItem>
             </InfoBox>
-            <Description>{coinInfo?.description}</Description>
+            <Description>{infoData?.description}</Description>
             <InfoBox>
               <InfoItem>
                 <span>TOTAL SUPPLY</span>
-                <span>{coinPrice?.total_supply}</span>
+                <span>{priceData?.total_supply}</span>
               </InfoItem>
               <InfoItem>
                 <span>MAX SUPPLY</span>
-                <span>{coinPrice?.max_supply}</span>
+                <span>{priceData?.max_supply}</span>
               </InfoItem>
             </InfoBox>
           </InfoView>

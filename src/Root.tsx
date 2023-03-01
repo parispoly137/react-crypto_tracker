@@ -1,6 +1,9 @@
 import { Outlet } from "react-router-dom";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { createGlobalStyle } from "styled-components";
 import { Helmet, HelmetProvider } from "react-helmet-async";
+import { ThemeProvider } from "styled-components";
+import { theme } from "./theme";
 
 // 전역으로 CSS 스타일을 적용시키는 컴포넌트
 const GlobalStyle = createGlobalStyle`
@@ -86,11 +89,15 @@ export default function Root() {
           rel='stylesheet'
         />
       </Helmet>
-      {/* 위에서 정의한 css 코드들을 전역으로 적용 */}
-      <GlobalStyle />
-      {/* 기본 Root인 App.tsx의 children을 렌더링해주는 Outlet 컴포넌트 */}
-      {/* -> Coins.tsx || Coin.tsx || NotFound.tsx */}
-      <Outlet />
+      {/* theme.ts로부터 기본 theme에 대한 객체를 받아와 적용 */}
+      <ThemeProvider theme={theme}>
+        {/* 위에서 정의한 css 코드들을 전역으로 적용 */}
+        <GlobalStyle />
+        {/* 기본 Root인 App.tsx의 children을 렌더링해주는 Outlet 컴포넌트 */}
+        {/* -> Coins.tsx || Coin.tsx || NotFound.tsx */}
+        <ReactQueryDevtools initialIsOpen={true} />
+        <Outlet />
+      </ThemeProvider>
     </HelmetProvider>
   );
 }
