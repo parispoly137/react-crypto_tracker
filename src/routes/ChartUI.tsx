@@ -1,5 +1,7 @@
 import ApexChart from "react-apexcharts";
 import NotFound from "../NotFound";
+import { useRecoilValue } from "recoil";
+import { isDarkAtom } from "../atom";
 
 interface IHistoryProps {
   time_open: number;
@@ -19,6 +21,8 @@ interface IProps {
 
 // ApexChart.js 라이브러리 이용
 export default function ChartUI({ data }: IProps) {
+  const isDark = useRecoilValue(isDarkAtom);
+
   return (
     <>
       {/* data가 정상적으로 넘어온 경우에만 차트 생성 (array) */}
@@ -43,7 +47,7 @@ export default function ChartUI({ data }: IProps) {
           ]}
           options={{
             theme: {
-              mode: "dark",
+              mode: isDark ? "dark" : "light",
             },
             chart: {
               height: 300,

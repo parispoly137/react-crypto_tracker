@@ -3,7 +3,9 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { createGlobalStyle } from "styled-components";
 import { Helmet, HelmetProvider } from "react-helmet-async";
 import { ThemeProvider } from "styled-components";
-import { theme } from "./theme";
+import { darkTheme, lightTheme } from "./theme";
+import { useRecoilValue } from "recoil";
+import { isDarkAtom } from "./atom";
 
 // 전역으로 CSS 스타일을 적용시키는 컴포넌트
 const GlobalStyle = createGlobalStyle`
@@ -73,12 +75,15 @@ button{
 
 body{
   background-color: ${(props) => props.theme.bgColor};
-  font-family: 'Comfortaa', cursive;
+  font-family: 'Comfortaa', cursive ;
+
 }
 
 `;
 
 export default function Root() {
+  const isDark = useRecoilValue(isDarkAtom); // atom의 state를 읽어온다.
+
   return (
     <HelmetProvider>
       {/* index.html의 head 부분에 직접 접근하지 않고 Helmet을 통해 추가 */}
@@ -91,7 +96,7 @@ export default function Root() {
         />
       </Helmet>
       {/* theme.ts로부터 기본 theme에 대한 객체를 받아와 적용 */}
-      <ThemeProvider theme={theme}>
+      <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
         {/* 위에서 정의한 css 코드들을 전역으로 적용 */}
         <GlobalStyle />
         {/* 기본 Root인 App.tsx의 children을 렌더링해주는 Outlet 컴포넌트 */}

@@ -18,23 +18,3 @@ export const fetchCoinHistory = (coinId: string) =>
   fetch(`https://ohlcv-api.nomadcoders.workers.dev/?coinId=${coinId}`).then(
     (res) => res.json()
   );
-/* 
-export const coinsFetcher = () =>
-  fetch("/json/coins.json").then((res) => res.json()); // Promise{<pending>}으로 반환
-
-export const fetchCoinInfo = () =>
-  fetch("/json/coin.json").then((res) => res.json());
-
-export const fetchCoinPrice = () =>
-  fetch("/json/tickers.json").then((res) => res.json());
-
-export const fetchCoinHistory = () =>
-  fetch("/json/history.json").then((res) => res.json()); */
-
-// export const fetchCoinHistory = () =>
-//   fetch("/json/nHistory.json").then((res) => res.json());
-
-// export const fetchCoinHistory = () =>
-// fetch("/json/emptyHistory.json").then(
-//   (res) => res.json()
-// );

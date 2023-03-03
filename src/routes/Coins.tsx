@@ -1,10 +1,10 @@
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-// import { useEffect, useState } from "react";
-// import axios from "axios";
 import { coinsFetcher } from "../api";
 import { Helmet } from "react-helmet-async";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { isDarkAtom } from "../atom";
 
 // styled components
 const Container = styled.div`
@@ -12,16 +12,36 @@ const Container = styled.div`
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  width: 480px;
+  margin: 0 auto;
+  margin-bottom: 60px;
 `;
 
 const Header = styled.header`
-  margin: 40px 0;
+  text-align: center;
+  margin: 60px 0;
+  position: relative;
+  width: 100%;
 `;
 
 const Title = styled.h1`
   // ThemeProvider 로 모든 컴포넌트에서 theme의 특성 접근 가능
   color: ${(props) => props.theme.accentColor};
   font-size: 38px;
+`;
+
+const Toggle = styled.button`
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 32px;
+  aspect-ratio: 1/1;
+  border: 2px solid ${(props) => props.theme.textColor};
+  border-radius: 10px;
+  padding: 5px;
+  z-index: 2;
+  font-size: 14px;
+  color: ${(props) => props.theme.listColor};
 `;
 
 const Loader = styled.span`
@@ -32,7 +52,7 @@ const Loader = styled.span`
 `;
 
 const CoinsList = styled.ul`
-  width: 440px;
+  width: 100%;
 `;
 
 const Coin = styled.li`
@@ -79,11 +99,15 @@ interface ICoinInfo {
 
 // Main
 export default function Coins() {
-  // useQuery 로 변경
+  // useQuery를 이용하여 API fetching
   const { isLoading, data } = useQuery<ICoinInfo[]>({
     queryKey: ["allCoins"],
     queryFn: coinsFetcher,
   });
+  // atom을 읽어오고 값을 수정할 수 있는 hooks들을 사용
+  const isDark = useRecoilValue(isDarkAtom);
+  const setIsDark = useSetRecoilState(isDarkAtom);
+  const toggleDark = () => setIsDark((prev) => !prev);
 
   return (
     <Container>
@@ -93,6 +117,8 @@ export default function Coins() {
       </Helmet>
       <Header>
         <Title>Crypto Tracker</Title>
+        {/* 모드를 토글할 수 있는 버튼 생성 */}
+        <Toggle onClick={toggleDark}>{isDark ? "🌞" : "🌙"}</Toggle>
       </Header>
       {/* 로딩이 끝난 경우에만 리스트를 보여주도록 삼항연산자 사용 */}
       {isLoading ? (

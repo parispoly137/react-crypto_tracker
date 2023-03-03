@@ -11,6 +11,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchCoinInfo, fetchCoinPrice } from "../api";
 import { BsHouseDoor } from "react-icons/bs";
 import { Helmet } from "react-helmet-async";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { isDarkAtom } from "../atom";
 
 // styled components
 const Container = styled.div`
@@ -22,7 +24,7 @@ const Container = styled.div`
 `;
 
 const Header = styled.header`
-  margin: 40px 0;
+  margin: 60px 0;
   text-align: center;
   position: relative;
 
@@ -39,6 +41,20 @@ const Header = styled.header`
 const Title = styled.h1`
   color: ${(props) => props.theme.accentColor};
   font-size: 38px;
+`;
+
+const Toggle = styled.button`
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 32px;
+  aspect-ratio: 1/1;
+  border: 2px solid ${(props) => props.theme.textColor};
+  border-radius: 10px;
+  padding: 5px;
+  z-index: 2;
+  font-size: 14px;
+  color: ${(props) => props.theme.listColor};
 `;
 
 const Loader = styled.span`
@@ -201,13 +217,11 @@ export default function Coin() {
   const { isLoading: infoLoading, data: infoData } = useQuery<ICoinInfo>({
     queryKey: ["coinInfo", coinId], // query key는 array 형식
     queryFn: () => fetchCoinInfo(coinId!), // promise를 반환하는 fetcher 함수 지정.
-    // queryFn: fetchCoinInfo, // promise를 반환하는 fetcher 함수 지정.
   });
 
   const { isLoading: priceLoading, data: priceData } = useQuery<ICoinPrice>({
     queryKey: ["coinPrice", coinId],
     queryFn: () => fetchCoinPrice(coinId!), // Non-null assertion operator
-    // queryFn: fetchCoinPrice,
     // api 요청이 실패했을 경우, onError 함수 실행
     onError: () => {
       // 특정 키에 대한 쿼리를 제거한다. 하나의 useQuery에서 이용해야 한다.
@@ -223,6 +237,11 @@ export default function Coin() {
   });
 
   const isLoading = infoLoading || priceLoading; // 로딩 상태를 하나로 통일
+
+  // 모드 토글을 위한 Recoil 세팅
+  const isDark = useRecoilValue(isDarkAtom);
+  const setIsDark = useSetRecoilState(isDarkAtom);
+  const toggleDark = () => setIsDark((prev) => !prev);
 
   return (
     <Container>
@@ -249,6 +268,8 @@ export default function Coin() {
           {/* 직접 접근했다면 state.name이 아닌 api에서 받은 정보로 출력 */}
           {state?.name ? state.name : isLoading ? "Loading..." : infoData?.name}
         </Title>
+        {/* 모드를 토클할 수 있는 버튼 생성 */}
+        <Toggle onClick={toggleDark}>{isDark ? "🌞" : "🌙"}</Toggle>
       </Header>
       {isLoading ? (
         <Loader>Loading...</Loader>
@@ -293,6 +314,7 @@ export default function Coin() {
             </Tab>
           </TabView>
           {/* Price 컴포넌트로 보낼 정보를 context로 전달 */}
+          {/* -> Chart.tsx | Price.tsx  */}
           <Outlet context={{ priceData, coinId }} />
         </>
       )}
