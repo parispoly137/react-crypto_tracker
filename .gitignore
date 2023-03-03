@@ -26,6 +26,8 @@ logs
 **/*.back.*
 
 node_modules
+.yarn
+.vscode
 bower_components
 
 *.sublime*

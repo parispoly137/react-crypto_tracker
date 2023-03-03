@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 // import { useEffect, useState } from "react";
 // import axios from "axios";
 import { coinsFetcher } from "../api";
+import { Helmet } from "react-helmet-async";
 
 // styled components
 const Container = styled.div`
@@ -86,6 +87,10 @@ export default function Coins() {
 
   return (
     <Container>
+      <Helmet>
+        <title>Crypto Tracker</title>
+        <link rel='icon' href='/imgs/coin.png' />
+      </Helmet>
       <Header>
         <Title>Crypto Tracker</Title>
       </Header>

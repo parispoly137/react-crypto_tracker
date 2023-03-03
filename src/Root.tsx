@@ -83,14 +83,12 @@ export default function Root() {
     <HelmetProvider>
       {/* index.html의 head 부분에 직접 접근하지 않고 Helmet을 통해 추가 */}
       <Helmet>
-        <title>Crypto Tracker</title>
         <link rel='preconnect' href='https://fonts.googleapis.com' />
         <link rel='preconnect' href='https://fonts.gstatic.com' />
         <link
           href='https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;500;600&display=swap'
           rel='stylesheet'
         />
-        <link rel='icon' href='/imgs/coin.png' />
       </Helmet>
       {/* theme.ts로부터 기본 theme에 대한 객체를 받아와 적용 */}
       <ThemeProvider theme={theme}>

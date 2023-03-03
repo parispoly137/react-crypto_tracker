@@ -4,9 +4,10 @@ import {
   Outlet,
   Link,
   useMatch,
+  useNavigate,
 } from "react-router-dom";
 import styled from "styled-components";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchCoinInfo, fetchCoinPrice } from "../api";
 import { BsHouseDoor } from "react-icons/bs";
 import { Helmet } from "react-helmet-async";
@@ -142,6 +143,7 @@ interface ICoinInfo {
   hash_algorithm: string;
   first_data_at: string;
   last_data_at: string;
+  error?: number;
 }
 
 // coinPrice 타입 선언
@@ -177,6 +179,7 @@ interface ICoinPrice {
       percent_from_price_ath: number;
     };
   };
+  error?: number;
 }
 
 // Main
@@ -184,23 +187,39 @@ export default function Coin() {
   // Link를 통해 보낸 state 객체를 받음. 새롭게 url에서 추출하지 않아도 된다.
   // (coinId를 이용해 API 호출하여 name을 받아올 수도 있다. <useLocation 실습용>)
   const { state } = useLocation() as IRouteState; // Generic을 지원하지 않아 as로 직접 지정
-
-  const { coinId } = useParams();
+  const { coinId } = useParams(); // URL 직접 접근 대비
+  const navigate = useNavigate(); // 오류일 경우 대비
 
   // useMatch를 이용하여 현재 url에 대한 object 정보를 얻는다.
   const chartMatch = useMatch("/:coinId/chart");
   const priceMatch = useMatch("/:coinId/price");
 
+  // index.tsx의 QueryClientProvider에 있는 client={queryClient} 를 가져온다.
+  const queryClient = useQueryClient();
+
   // react query 의 useQuery를 이용하여 데이터, 로딩상태 등을 가져온다.
   const { isLoading: infoLoading, data: infoData } = useQuery<ICoinInfo>({
     queryKey: ["coinInfo", coinId], // query key는 array 형식
     queryFn: () => fetchCoinInfo(coinId!), // promise를 반환하는 fetcher 함수 지정.
+    // queryFn: fetchCoinInfo, // promise를 반환하는 fetcher 함수 지정.
   });
 
   const { isLoading: priceLoading, data: priceData } = useQuery<ICoinPrice>({
     queryKey: ["coinPrice", coinId],
     queryFn: () => fetchCoinPrice(coinId!), // Non-null assertion operator
-    // refetchInterval: 5000, // 지정한 시간 간격마다 fetching을 다시 실행한다.
+    // queryFn: fetchCoinPrice,
+    // api 요청이 실패했을 경우, onError 함수 실행
+    onError: () => {
+      // 특정 키에 대한 쿼리를 제거한다. 하나의 useQuery에서 이용해야 한다.
+      queryClient.removeQueries({
+        queryKey: ["coinPrice", coinId],
+      });
+      queryClient.removeQueries({
+        queryKey: ["coinInfo", coinId],
+      });
+      navigate("/"); // 삭제 후 홈으로 이동 (-> Coins.tsx)
+    },
+    refetchInterval: 5000, // 지정한 시간 간격마다 fetching을 다시 실행한다.
   });
 
   const isLoading = infoLoading || priceLoading; // 로딩 상태를 하나로 통일
@@ -265,13 +284,16 @@ export default function Coin() {
           <TabView>
             {/* props를 직접 정의하여 전달 */}
             <Tab isActive={chartMatch !== null}>
-              <Link to={`/${coinId}/chart`}>Chart</Link>
+              <Link to={`/${coinId}/chart`} state={coinId}>
+                Chart
+              </Link>
             </Tab>
             <Tab isActive={priceMatch !== null}>
               <Link to={`/${coinId}/price`}>Price</Link>
             </Tab>
           </TabView>
-          <Outlet />
+          {/* Price 컴포넌트로 보낼 정보를 context로 전달 */}
+          <Outlet context={{ priceData, coinId }} />
         </>
       )}
     </Container>
