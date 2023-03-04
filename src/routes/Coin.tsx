@@ -20,7 +20,13 @@ const Container = styled.div`
   flex-direction: column;
   width: 480px;
   margin: 0 auto;
+  margin-bottom: 60px;
+
   color: ${(props) => props.theme.listColor};
+
+  @media screen and (max-width: 565px) {
+    width: 80vw;
+  }
 `;
 
 const Header = styled.header`
@@ -35,12 +41,20 @@ const Header = styled.header`
     left: 0;
     transform: translateY(-50%);
     color: ${(props) => props.theme.listColor};
+
+    @media screen and (max-width: 565px) {
+      font-size: 20px;
+    }
   }
 `;
 
 const Title = styled.h1`
   color: ${(props) => props.theme.accentColor};
   font-size: 38px;
+
+  @media screen and (max-width: 565px) {
+    font-size: 30px;
+  }
 `;
 
 const Toggle = styled.button`
@@ -50,11 +64,21 @@ const Toggle = styled.button`
   width: 32px;
   aspect-ratio: 1/1;
   border: 2px solid ${(props) => props.theme.textColor};
-  border-radius: 10px;
+  border-radius: 30%;
   padding: 5px;
   z-index: 2;
   font-size: 14px;
   color: ${(props) => props.theme.listColor};
+
+  @media screen and (max-width: 565px) {
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-width: 1px;
+  }
 `;
 
 const Loader = styled.span`

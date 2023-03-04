@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+// import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { createGlobalStyle } from "styled-components";
 import { Helmet, HelmetProvider } from "react-helmet-async";
 import { ThemeProvider } from "styled-components";
@@ -76,6 +76,8 @@ button{
 body{
   background-color: ${(props) => props.theme.bgColor};
   font-family: 'Comfortaa', cursive ;
+  display: flex;
+  justify-content: center;
 
 }
 
@@ -101,7 +103,7 @@ export default function Root() {
         <GlobalStyle />
         {/* 기본 Root인 App.tsx의 children을 렌더링해주는 Outlet 컴포넌트 */}
         {/* -> Coins.tsx || Coin.tsx || NotFound.tsx */}
-        <ReactQueryDevtools initialIsOpen={true} />
+        {/* <ReactQueryDevtools initialIsOpen={true} /> */}
         <Outlet />
       </ThemeProvider>
     </HelmetProvider>

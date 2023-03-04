@@ -8,6 +8,10 @@ const Container = styled.div`
 const Text = styled.h1`
   margin-bottom: 10px;
   font-weight: bold;
+
+  @media screen and (max-width: 565px) {
+    font-size: 14px;
+  }
 `;
 
 const TextInfo = styled.span`
