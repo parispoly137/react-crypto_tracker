@@ -98,19 +98,24 @@ export default function Root() {
           rel='stylesheet'
         />
         {/* 메타태그 설정 */}
-        <meta property='og:title' content='Cryto Tracker' />
-        <meta
-          property='og:description'
-          content='A site that shows a list of coins and shows charts and prices by calling the real-time market price of each coin.'
-        />
-        <meta
-          property='og:image'
-          content='https://w7.pngwing.com/pngs/285/560/png-transparent-icon-coin-gold-coin-bitcoin-logo-gold-united-states-dollar-circle.png'
-        />
+        <meta property='og:type' content='website' />
         <meta
           property='og:url'
           content='https://parispoly137.github.io/react-crypto_tracker/'
         />
+        <meta property='og:title' content='Crypto Tracker' />
+        <meta
+          property='og:image'
+          content='https://img.sbs.co.kr/newimg/news/20220720/201683995_1280.jpg'
+        />
+        <meta
+          property='og:description'
+          content='A site that shows a list of coins and shows charts and prices by calling the real-time market price of each coin.'
+        />
+        <meta property='og:site_name' content='Crypto Tracker' />
+        <meta property='og:locale' content='en_US' />
+        <meta property='og:image:width' content='1200' />
+        <meta property='og:image:height' content='630' />
       </Helmet>
       {/* theme.ts로부터 기본 theme에 대한 객체를 받아와 적용 */}
       <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
